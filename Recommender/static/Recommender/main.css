@@ -1,0 +1,131 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    background-color: #3a3a3a;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #444444;
+}
+.header-title {
+    color: #ffffff;
+}
+
+.bg-steel {
+  background-color: #5f788a;
+}
+
+.site-header .navbar-nav .nav-link {
+  color: #cbd5db;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+  color: #ffffff;
+}
+
+.site-header .navbar-nav .nav-link.active {
+  font-weight: 500;
+}
+.col-md-8.text-center.mt-2 {
+    height: auto; /
+}
+
+.container {
+    height: 80%;
+    align-self: center;
+    position: relative;
+}
+.card {
+    width: 80%;
+    height: 80vh; /
+    margin: auto;
+    overflow-y: auto;
+    overflow-x: hidden; /
+}
+.card-img {
+    height: 400px;
+    width: auto;
+}
+
+.card-body {
+    padding: 15px;
+}
+.card-title {
+    margin-top: 0;
+}
+.col-md-4 {
+    padding-bottom: 0;
+}
+.col-md-12 {
+    padding-top: 0;
+}
+.content-section {
+    background-color: #ffffff;
+}
+
+/* Wrapper Container */
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Full viewport height */
+}
+
+/* Button Styles */
+.btn {
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+@media (max-width: 768px) {
+    .card-img {
+        height: 200px;
+    }
+}

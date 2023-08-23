@@ -1,0 +1,165 @@
+{% extends "Recommender/base.html" %}
+{% block content %}
+<!--Main Container-->
+<div class="container-fluid">
+
+    {% if recommended_movie %}
+    <div class="content-wrapper">
+        <div class="row no-gutters justify-content-center">
+        <!--Movie Recommendation Header-->
+        <h2 class="mt-3 mb-3 text-center header-title">Movie Recommendation</h2>
+        </div>
+
+        <!--Movie Information Display-->
+        <div class="card mb-12">
+            <div class="row no-gutters justify-content-center">
+                <!--Movie Poster-->
+                <div class="col-md-8 text-center mt-2">
+                    <img id="poster" src="{{ recommended_movie.poster_url }}" class="card-img mx-auto" alt="{{  recommended_movie.title }} Poster">
+                    <p id="no-poster" class="text-muted" style="display: {% if recommended_movie.poster_url %}none{% else %}block{% endif %};">Poster is Unavailable</p>
+                </div>
+                <!--Movie Details-->
+                <div class="col-md-12">
+                    <div class="card-body">
+                        <!--Movie Title-->
+                        <h5 class="card-title text-center" id="title">{{ recommended_movie.title }}</h5>
+                        <!-- Movie Overview -->
+                        {% if recommended_movie.overview %}
+                        <p class="card-text text-center" id="overview">{{ recommended_movie.overview }}</p>
+                        {% else %}
+                        <p class="card-text text-center">Movie Overview Unavailable.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+
+               <!--Rating and Navigation Buttons-->
+                <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+                    <!--Back Button-->
+                    <div class="btn-group mr-2" role="group">
+                        <button class="btn btn-secondary btn-block btn-back mr-1">Previous</button>
+                    </div>
+                    <!--Rating Buttons-->
+                    <div class="btn-group mr-2" role="group" aria-label="Rating Buttons">
+                        <button type="button" class="btn btn-primary mr-1" value="1">1</button>
+                        <button type="button" class="btn btn-primary mr-1" value="2">2</button>
+                        <button type="button" class="btn btn-primary mr-1" value="3">3</button>
+                        <button type="button" class="btn btn-primary mr-1" value="4">4</button>
+                        <button type="button" class="btn btn-primary mr-1" value="5">5</button>
+                    </div>
+                    <!--Next Button-->
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-success btn-block btn-forward">Next</button>
+                    </div>
+                </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    {% else %}
+        <h2>We don't have any movie recommendations for you yet.</h2>
+    {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    let currentPosition = 0;
+    let userId = "{{ user.id }}";
+    let movieId = "{{ recommended_movie.id }}";
+    let recommended_movie_poster_url = "{{ recommended_movie.poster_url }}";
+
+    $(function() {
+
+        // Event listener for the 'Next' button to fetch the next movie recommendation
+        $('.btn-forward').on('click', function(event) {
+            fetchMovieRecommendation('next');
+        });
+
+        // Event listener for the 'Previous' button to fetch the previous movie recommendation
+        $('.btn-back').on('click', function(event) {
+            fetchMovieRecommendation('back');
+        });
+
+        // Event listener for rating buttons to send the user's rating to the server
+        $('.btn-primary').on('click', function(event) {
+            let rating = $(this).val();
+
+            // AJAX request to send the rating to the server
+            $.ajax({
+                url: "{% url 'rate_movie' %}",
+                method: 'POST',
+                contentType: 'application/json',
+                headers: { "X-CSRFToken": '{{ csrf_token }}' },
+                data: JSON.stringify({
+                    movie_id: movieId,
+                    user_id: userId,
+                    rating: rating,
+                }),
+                success: function(data) {
+                    // On successful response, fetch the next movie recommendation
+                    console.log(recommended_movie_poster_url);
+                    fetchMovieRecommendation('rate');
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        // Function to fetch movie recommendations based on the action (next, back, rate)
+        function fetchMovieRecommendation(action) {
+
+            // AJAX request to get a movie recommendation
+            $.ajax({
+                url: "{% url 'get_recommendation' %}",
+                method: 'GET',
+                contentType: 'application/json',
+                headers: { "X-CSRFToken": '{{ csrf_token }}' },
+                data: {
+                        action: action,
+                        user_id: userId,
+                        movie_id: movieId
+                },
+                success: function(data) {
+                // If a recommended movie is received, update the displayed movie details
+                    if (data.recommended_movie) {
+                        let recommendedMovie = data.recommended_movie;
+                        $('#title').text(recommendedMovie.title);
+                        if (recommendedMovie.overview && recommendedMovie.overview != "") {
+                            $('#overview').text(recommendedMovie.overview);
+                        } else {
+                            $('#overview').text('No Overview Available');
+                        }
+
+                        if (recommendedMovie.poster_url && recommendedMovie.poster_url != "") {
+                            $('#poster').attr('src', recommendedMovie.poster_url);
+                            $('#poster').attr('alt', recommendedMovie.title + ' Poster');
+                            $('#poster').show();
+                            $('#no-poster').hide();  // Hide the 'Poster is Unavailable' message
+                        } else {
+                            $('#poster').hide();
+                            $('#no-poster').show();  // Show the 'Poster is Unavailable' message
+                        }
+
+                        // Update the movieId variable with the ID of the newly recommended movie
+                        movieId = recommendedMovie.id;
+                    } else {
+                        console.log(data.message);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+
+        }
+
+    });
+
+</script>
+{% endblock content %}
