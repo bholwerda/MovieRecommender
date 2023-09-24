@@ -32,7 +32,6 @@ def register(request):
 
 # Function to set initial movie recommendations for a user
 def get_initial_movies(user):
-    print("get_initial_movies function is being called!")  # Add this line
     # Retrieves the base user from the User model
     base_user = User.objects.get(username='brett')
     # Retrieves the top 9 rated movies from the base user
