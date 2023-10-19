@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
-from Recommender.models import Recommendation, Rating
+from Recommender.models import Recommendation, Rating, Movie
 from .forms import UserRegisterForm
 
 
@@ -32,14 +32,21 @@ def register(request):
 
 # Function to set initial movie recommendations for a user
 def get_initial_movies(user):
-    # Retrieves the base user from the User model
-    base_user = User.objects.get(username='brett')
-    # Retrieves the top 9 rated movies from the base user
-    popular_ratings = Rating.objects.filter(user=base_user).order_by('-rating')[:10]
-    # Retrieves the movie objects associated with the popular ratings
-    popular_movies = [r.movie for r in popular_ratings]
+    popular_movies = [
+        'Air Bud',
+        'Spider-Man: Into the Spider-Verse',
+        'Black Panther',
+        'The Pursuit of Happyness',
+        'Inception',
+        'Jurassic World Camp Cretaceous',
+        'Se7en',
+        'Terminator: Dark Fate',
+        'Trainspotting',
+        'No Country for Old Men',
+    ]
+    
+    movie_objects = Movie.objects.filter(title__in=popular_movies)
+    
+    recommendations_to_create = [Recommendation(user=user, movie=movie) for movie in movie_objects]
 
-    # Iterates over each popular movie
-    for movie in popular_movies:
-        # Creates a recommendation for the user and the movie
-        Recommendation.objects.create(user=user, movie=movie)
+    Recommendation.objects.bulk_create(recommendations_to_create)
