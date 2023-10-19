@@ -9,7 +9,7 @@ import pandas as pd
 # Movie model representing individual movies in the database
 class Movie(models.Model):
     title = models.CharField(max_length=200)
-    overview = models.CharField(max_length=1000, null=True)
+    overview = models.CharField(max_length=2000, null=True)
     genre = models.CharField(max_length=50, null=True)
     poster_url = models.CharField(max_length=200, null=True)
 
