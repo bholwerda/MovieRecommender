@@ -38,11 +38,11 @@ class Recommendation(models.Model):
     @classmethod
     def get_predictions(cls, user):
         user_id = user.id
-        # Query all ratings from the database
-        ratings_query = Rating.objects.filter(is_skipped=False)
+        
+        non_skipped_ratings = Rating.objects.filter(is_skipped=False)
 
         # Convert the QuerySet to a DataFrame for easier manipulation
-        ratings_df = pd.DataFrame.from_records(ratings_query.values())
+        ratings_df = pd.DataFrame.from_records(non_skipped_ratings.values())
 
         # Drop the 'id' and 's_skipped' column from the DataFrame as it's not needed for the calculations
         ratings_df = ratings_df.drop('id', axis=1)
