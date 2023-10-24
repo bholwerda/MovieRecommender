@@ -1,6 +1,7 @@
 from django.db import models
 from sklearn.metrics.pairwise import cosine_similarity
 from django.contrib.auth.models import User
+from django.db.models import Count
 import numpy as np
 import pandas as pd
 # Create your models here.
@@ -39,6 +40,12 @@ class Recommendation(models.Model):
     def get_predictions(cls, user):
         user_id = user.id
         
+        if not Rating.objects.filter(user=user, rating__gt=0).exists():
+            highly_rated_movies = Rating.objects.exclude(user=user).filter(rating__gt=3)\
+                .values('movie_id').annotate(count_ratings=Count('movie_id')).order_by('-count_ratings')[:10]
+            highly_rated_movie_ids = [movie['movie_id'] for movie in highly_rated_movies]
+            return pd.DataFrame({'movie_id': highly_rated_movie_ids, 'predicted_rating': [np.nan] * len(highly_rated_movie_ids)})
+        
         non_skipped_ratings = Rating.objects.filter(is_skipped=False)
 
         ratings_df = pd.DataFrame.from_records(non_skipped_ratings.values())
@@ -54,6 +61,7 @@ class Recommendation(models.Model):
 
         sim_df = pd.DataFrame(data=similarities, index=user_movie_matrix.index, columns=user_movie_matrix.index)
 
+            
         user_similarities = sim_df[user_id]
 
         unrated_movie_ids = user_movie_matrix.loc[user_id][user_movie_matrix.loc[user_id].isnull()].index
