@@ -37,7 +37,6 @@ class Recommendation(models.Model):
         return self.movie.title
     @classmethod
     def get_predictions(cls, user):
-        print('Getting Predictions')
         user_id = user.id
         # Query all ratings from the database
         ratings_query = Rating.objects.filter(is_skipped=False)
@@ -91,7 +90,6 @@ class Recommendation(models.Model):
 
         # Get the top 10 movies with the highest predicted ratings
         top_movies = sorted_predicted_ratings_df.head(10)
-        print(f"Predicted movies for user {user.username}: {top_movies}")
 
         # Return the top movies
         return top_movies
